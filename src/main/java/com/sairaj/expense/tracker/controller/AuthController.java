@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @GetMapping("/health")
-    public ResponseEntity<String> demo(){
-        return ResponseEntity.ok().body("Backend Service is running");
-    }
+    
 
 //    @PostMapping("/create")
 //    public ResponseEntity
