@@ -3,6 +3,12 @@ info:
   title: Expense Tracker API
   version: 1.0.0
 
+tags:
+  - name : Auth
+    description : APIs used for authentication and user management
+  - name: Expense
+    description: APIs used to manage expense management
+
 #servers:
 #  - url: "mark1"
 #    description : "this is mark one"
@@ -31,6 +37,8 @@ paths:
           description: Bad Request, wrong request body
         '409':
           description: Conflict, user already exists in system
+  /auth/api/login:
+
 
 components:
   schemas:
