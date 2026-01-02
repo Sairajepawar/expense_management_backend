@@ -102,7 +102,43 @@
 
 				</configuration>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.2.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-dtos</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/openapi.yaml
+                            </inputSpec>
+
+                            <generatorName>spring</generatorName>
+
+                            <!-- DTOs ONLY -->
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+
+                            <!-- Generate directly into src -->
+                            <output>${project.basedir}</output>
+                            <modelPackage>com.sairaj.expense.tracker.dto</modelPackage>
+
+                            <configOptions>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useJakartaEe>true</useJakartaEe>
+                                <openApiNullable>false</openApiNullable>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
 	</build>
 
 </project>
