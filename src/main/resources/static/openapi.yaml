@@ -3,21 +3,21 @@ info:
   title: Expense Tracker API
   version: 1.0.0
 
+servers:
+  - url: http://localhost:9090
+    description: Local server
+
 tags:
-  - name : Auth
-    description : APIs used for authentication and user management
+  - name: Auth
+    description: APIs used for authentication and user management
   - name: Expense
     description: APIs used to manage expense management
-
-#servers:
-#  - url: "mark1"
-#    description : "this is mark one"
-#  - url: "mark2"
-#    description : "this is mark two"
 
 paths:
   /auth/api/create:
     post:
+      tags:
+        - Auth
       summary: Create User
       operationId: createUser
       requestBody:
@@ -37,8 +37,6 @@ paths:
           description: Bad Request, wrong request body
         '409':
           description: Conflict, user already exists in system
-  /auth/api/login:
-
 
 components:
   schemas:
@@ -52,18 +50,15 @@ components:
         name:
           type: string
           example: Saul Goodman
-          description: Valid Name
         email:
           type: string
           format: email
           example: saul@goodman.com
-          description: Valid Email
         password:
           type: string
           format: password
           minLength: 8
           maxLength: 64
-          description: User password
 
     UserResponse:
       type: object
@@ -72,3 +67,4 @@ components:
       properties:
         message:
           type: string
+          example: User created successfully
