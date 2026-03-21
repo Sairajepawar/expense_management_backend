@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: Expense Tracker API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:9090
+    description: Local server
+
+tags:
+  - name: Auth
+    description: APIs used for authentication and user management
+  - name: Expense
+    description: APIs used to manage expense management
+
+paths:
+  /api/auth/create:
+    post:
+      tags:
+        - Auth
+      summary: Create User
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: User Created
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "User Created"
+        '400':
+          description: Bad Request, wrong request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict, user already exists in system
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - message
+        - date
+      properties:
+        message:
+          type: string
+          example: Details about error
+        date:
+          type: string
+          format: date
+          example: Date at which error occured
+    UserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Saul Goodman
+        email:
+          type: string
+          format: email
+          example: saul@goodman.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 64
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$'
+          example: Password@1234

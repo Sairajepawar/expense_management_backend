@@ -1,20 +1,27 @@
 package com.sairaj.expense.tracker.controller;
 
+import com.sairaj.expense.tracker.dto.UserRequest;
+import com.sairaj.expense.tracker.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @GetMapping("/health")
-    public ResponseEntity<String> demo(){
-        return ResponseEntity.ok().body("Backend Service is running");
+    private UserService userService;
+
+    public AuthController(UserService userService){
+        this.userService = userService;
     }
 
-//    @PostMapping("/create")
-//    public ResponseEntity
+    @PostMapping("/create")
+    public ResponseEntity<String> createuser(@Valid @RequestBody UserRequest userRequest){
+        userService.createUser(userRequest);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("User Created Successfully");
+    }
 }
