@@ -78,6 +78,10 @@
 			<artifactId>modelmapper</artifactId>
 			<version>3.2.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -104,45 +108,8 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
-
 				</configuration>
 			</plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.openapitools</groupId>-->
-<!--                <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                <version>7.2.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>generate-dtos</id>-->
-<!--                        <goals>-->
-<!--                            <goal>generate</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <inputSpec>-->
-<!--                                ${project.basedir}/src/main/resources/openapi.yaml-->
-<!--                            </inputSpec>-->
-
-<!--                            <generatorName>spring</generatorName>-->
-
-<!--                            &lt;!&ndash; DTOs ONLY &ndash;&gt;-->
-<!--                            <generateApis>false</generateApis>-->
-<!--                            <generateModels>true</generateModels>-->
-<!--                            <generateSupportingFiles>false</generateSupportingFiles>-->
-
-<!--                            &lt;!&ndash; Generate directly into src &ndash;&gt;-->
-<!--                            <output>${project.basedir}</output>-->
-<!--                            <modelPackage>com.sairaj.expense.tracker.dto</modelPackage>-->
-
-<!--                            <configOptions>-->
-<!--                                <useSpringBoot3>true</useSpringBoot3>-->
-<!--                                <useJakartaEe>true</useJakartaEe>-->
-<!--                                <openApiNullable>false</openApiNullable>-->
-<!--                            </configOptions>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-
         </plugins>
 	</build>
 
