@@ -1,5 +1,7 @@
 package com.sairaj.expense.tracker.controller;
 
+import com.sairaj.expense.tracker.dto.LoginRequest;
+import com.sairaj.expense.tracker.dto.TokenResponse;
 import com.sairaj.expense.tracker.dto.UserRequest;
 import com.sairaj.expense.tracker.service.UserService;
 import jakarta.validation.Valid;
@@ -23,5 +25,13 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body("User Created Successfully");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest){
+        TokenResponse tokenResponse = userService.loginUser(loginRequest);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(tokenResponse);
     }
 }

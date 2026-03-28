@@ -1,11 +1,18 @@
 package com.sairaj.expense.tracker.service.impl;
 
+import com.sairaj.expense.tracker.dto.LoginRequest;
+import com.sairaj.expense.tracker.dto.TokenResponse;
 import com.sairaj.expense.tracker.dto.UserRequest;
 import com.sairaj.expense.tracker.exceptions.EmailAlreadyExistException;
+import com.sairaj.expense.tracker.exceptions.InvalidCrendentialException;
 import com.sairaj.expense.tracker.model.User;
 import com.sairaj.expense.tracker.repository.UserRepository;
+import com.sairaj.expense.tracker.service.JwtService;
 import com.sairaj.expense.tracker.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +22,19 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private ModelMapper modelMapper;
     private PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager;
+    private JwtService jwtService;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder){
+    public UserServiceImpl(UserRepository userRepository,
+                           ModelMapper modelMapper,
+                           PasswordEncoder passwordEncoder,
+                           AuthenticationManager authenticationManager,
+                           JwtService jwtService){
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -32,6 +47,21 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-
+    @Override
+    public TokenResponse loginUser(LoginRequest loginRequest){
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()
+                )
+        );
+        if(auth.isAuthenticated()){
+            TokenResponse tokenResponse = TokenResponse.builder().token(jwtService.generateToken(loginRequest.getEmail())).build();
+            return tokenResponse;
+        }
+        else{
+            throw new InvalidCrendentialException("Invalid Credentials");
+        }
+    }
 }
 
