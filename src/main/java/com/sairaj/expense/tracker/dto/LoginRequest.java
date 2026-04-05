@@ -1,19 +1,16 @@
 package com.sairaj.expense.tracker.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class LoginRequest {
 
     @Email
-    @NotNull
+    @NotBlank
     private String email;
 
-    @NotNull
+    @NotBlank
     @Pattern(
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).+$",
             message = "Password must be contain atleast one character with uppercase, lowercase, number, and symbol"

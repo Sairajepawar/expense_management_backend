@@ -1,9 +1,11 @@
 package com.sairaj.expense.tracker.service;
 
+import com.sairaj.expense.tracker.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.UUID;
+
 @Component
 public class JwtService {
 
@@ -23,9 +27,9 @@ public class JwtService {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateToken(String Username){
+    public String generateToken(UUID id){
         return Jwts.builder()
-                .setSubject(Username)
+                .setSubject(id.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis()+EXPIRATION_TIME))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
@@ -52,8 +56,7 @@ public class JwtService {
                 .getBody();
     }
 
-    public boolean validateToken(String token, UserDetails userDetails){
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public boolean validateToken(String token){
+        return !isTokenExpired(token);
     }
 }
