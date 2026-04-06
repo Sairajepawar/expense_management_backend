@@ -1,6 +1,7 @@
 package com.sairaj.expense.tracker.exceptions;
 
 import com.sairaj.expense.tracker.dto.ErrorResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +30,13 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder().message(invalidCrendentialException.getMessage()).date(LocalDate.now()).build();
         return ResponseEntity
                 .status(invalidCrendentialException.getStatusCode())
+                .body(errorResponse);
+    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleGenericException(Exception exception){
+        ErrorResponse errorResponse = ErrorResponse.builder().message(exception.getMessage()).date(LocalDate.now()).build();
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(errorResponse);
     }
 }

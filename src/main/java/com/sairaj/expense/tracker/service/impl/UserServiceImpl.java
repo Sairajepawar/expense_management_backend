@@ -9,13 +9,16 @@ import com.sairaj.expense.tracker.model.User;
 import com.sairaj.expense.tracker.repository.UserRepository;
 import com.sairaj.expense.tracker.service.JwtService;
 import com.sairaj.expense.tracker.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -56,7 +59,8 @@ public class UserServiceImpl implements UserService {
                 )
         );
         if(auth.isAuthenticated()){
-            TokenResponse tokenResponse = TokenResponse.builder().token(jwtService.generateToken(loginRequest.getEmail())).build();
+            User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(()-> new UsernameNotFoundException("Invalid Input"));
+            TokenResponse tokenResponse = TokenResponse.builder().token(jwtService.generateToken(user.getId())).build();
             return tokenResponse;
         }
         else{

@@ -5,10 +5,10 @@ import com.sairaj.expense.tracker.dto.TokenResponse;
 import com.sairaj.expense.tracker.dto.UserRequest;
 import com.sairaj.expense.tracker.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

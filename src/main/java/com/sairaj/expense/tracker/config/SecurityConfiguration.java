@@ -3,6 +3,7 @@ package com.sairaj.expense.tracker.config;
 import jakarta.validation.groups.ConvertGroup;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -24,10 +25,25 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    @Order(1)
+    public SecurityFilterChain swaggerFilterChain(HttpSecurity http) throws Exception{
+        http
+                .securityMatcher("/swagger-ui/**","/v3/api-docs/**","/actuator/**")
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                );
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher("/api/**")
                 .csrf(csrf -> csrf.disable()) // Required to allow POST/PUT requests from frontend
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()// This stops basic auth for api starting with /api/aut
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
