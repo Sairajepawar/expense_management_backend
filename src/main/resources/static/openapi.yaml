@@ -84,7 +84,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExpenseCreation'
+              $ref: '#/components/schemas/ExpenseDetails'
       responses:
         '201':
           description: Expense Created

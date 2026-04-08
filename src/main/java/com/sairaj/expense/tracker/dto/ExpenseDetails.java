@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ExpenseCreation {
+public class ExpenseDetails {
     @NotNull
     @Min(value=0)
     private double amount;
