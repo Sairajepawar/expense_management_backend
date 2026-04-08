@@ -24,7 +24,4 @@ public class User {
     private String email;
     @NotBlank
     private String password;
-
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Expense> expenses;
 }

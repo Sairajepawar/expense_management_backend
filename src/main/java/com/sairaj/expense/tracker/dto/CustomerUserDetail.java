@@ -19,6 +19,8 @@ public class CustomerUserDetail implements UserDetails {
 
     private String password;
 
+    public UUID getId(){ return this.id;}
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();

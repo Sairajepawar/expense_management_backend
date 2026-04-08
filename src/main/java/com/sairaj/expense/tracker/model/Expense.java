@@ -1,6 +1,7 @@
 package com.sairaj.expense.tracker.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -14,15 +15,14 @@ public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     @NotNull
-    private BigDecimal amount;
+    private double amount;
+    @NotBlank
     private String category;
+    @NotBlank
     private String description;
     @NotNull
     private LocalDate expenseDate;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User users;
+    @NotNull
+    private UUID user_id;
 }

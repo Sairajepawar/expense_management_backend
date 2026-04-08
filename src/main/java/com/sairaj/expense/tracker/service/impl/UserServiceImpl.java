@@ -8,7 +8,7 @@ import com.sairaj.expense.tracker.exceptions.InvalidCrendentialException;
 import com.sairaj.expense.tracker.model.User;
 import com.sairaj.expense.tracker.repository.UserRepository;
 import com.sairaj.expense.tracker.service.JwtService;
-import com.sairaj.expense.tracker.service.UserService;
+import com.sairaj.expense.tracker.service.interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;

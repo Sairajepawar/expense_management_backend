@@ -1,10 +1,8 @@
-package com.sairaj.expense.tracker.service;
+package com.sairaj.expense.tracker.service.interfaces;
 
 import com.sairaj.expense.tracker.dto.LoginRequest;
 import com.sairaj.expense.tracker.dto.TokenResponse;
 import com.sairaj.expense.tracker.dto.UserRequest;
-import com.sairaj.expense.tracker.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public interface UserService {
 
