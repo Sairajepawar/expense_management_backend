@@ -1,7 +1,6 @@
 package com.sairaj.expense.tracker.service.impl;
 
 import com.sairaj.expense.tracker.dto.ExpenseDetails;
-import com.sairaj.expense.tracker.dto.ExpenseId;
 import com.sairaj.expense.tracker.exceptions.OwnershipViolationException;
 import com.sairaj.expense.tracker.model.Expense;
 import com.sairaj.expense.tracker.repository.ExpenseRepository;
@@ -37,8 +36,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public void deleteExpense(ExpenseId expenseId, UUID user_id){
-        Expense expense = expenseRepository.findById(UUID.fromString(expenseId.getExpense_id())).orElseThrow(
+    public void deleteExpense(UUID expenseId, UUID user_id){
+        Expense expense = expenseRepository.findById(expenseId).orElseThrow(
                 ()->new EntityNotFoundException("Expense entry exists")
         );
 //        check if expense entry belongs to user
