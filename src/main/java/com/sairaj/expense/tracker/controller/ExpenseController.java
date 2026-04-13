@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -36,13 +37,22 @@ public class ExpenseController {
     }
     //delete
     @PutMapping("/delete")
-    public ResponseEntity<String> deleteExpense(@Valid @RequestParam UUID expenseId, @AuthenticationPrincipal CustomerUserDetail userDetail){
+    public ResponseEntity<String> deleteExpense(@RequestParam UUID expenseId, @AuthenticationPrincipal CustomerUserDetail userDetail){
         expenseService.deleteExpense(expenseId,userDetail.getId());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Expense Delete Successfully");
     }
     //edit
-
+    @PutMapping("/edit")
+    public ResponseEntity<String> editExpense(
+            @RequestParam UUID expenseId,
+            @RequestBody Map<String,Object> updates,
+            @AuthenticationPrincipal CustomerUserDetail userDetail){
+        expenseService.editExpense(expenseId,updates,userDetail.getId());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Expense Edited");
+    }
     //import
 }

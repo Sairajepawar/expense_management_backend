@@ -9,8 +9,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -38,14 +40,31 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public void deleteExpense(UUID expenseId, UUID user_id){
         Expense expense = expenseRepository.findById(expenseId).orElseThrow(
-                ()->new EntityNotFoundException("Expense entry exists")
+                ()->new EntityNotFoundException("Expense entry doesn't exists")
         );
-//        check if expense entry belongs to user
-        log.info(expense.getUser_id().toString());
-        log.info(user_id.toString());
         if(!(expense.getUser_id().equals(user_id))){
             throw new OwnershipViolationException("Access denied: this expense is not associated with the current user.");
         }
         expenseRepository.delete(expense);
+    }
+
+    @Override
+    public void editExpense(UUID expenseId, Map<String,Object> updates, UUID user_id){
+        ObjectMapper mapper = new ObjectMapper();
+        Expense expense = expenseRepository.findById(expenseId).orElseThrow(
+                ()->new EntityNotFoundException("Expense entry doesn't exists")
+        );
+        if(!(expense.getUser_id().equals(user_id))){
+            throw new OwnershipViolationException("Access denied: this expense is not associated with the current user.");
+        }
+        for(Map.Entry<String,Object> update:updates.entrySet()){
+            switch (update.getKey()){
+                case "amount" -> expense.setAmount(mapper.convertValue(update.getValue(), Double.class));
+                case "category" -> expense.setCategory(mapper.convertValue(update.getValue(),String.class));
+                case "description" -> expense.setDescription(mapper.convertValue(update.getValue(),String.class));
+                default -> throw new IllegalArgumentException("Not allowed: " + update.getKey());
+            }
+        }
+        expenseRepository.save(expense);
     }
 }
