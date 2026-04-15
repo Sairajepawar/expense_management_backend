@@ -24,5 +24,5 @@ public class Expense {
     @NotNull
     private LocalDate expenseDate;
     @NotNull
-    private UUID user_id;
+    private UUID userid;
 }

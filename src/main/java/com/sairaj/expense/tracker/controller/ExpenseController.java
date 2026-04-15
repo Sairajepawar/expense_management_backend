@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,28 +33,30 @@ public class ExpenseController {
     @PostMapping("/create")
     public ResponseEntity<String> createExpense(@Valid @RequestBody ExpenseDetails expenseDetails, @AuthenticationPrincipal CustomerUserDetail userDetails){
         expenseService.createExpense(expenseDetails,userDetails.getId());
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("Expense Created");
+        return ResponseEntity.ok("Expense Created");
     }
     //delete
     @PutMapping("/delete")
     public ResponseEntity<String> deleteExpense(@RequestParam UUID expenseId, @AuthenticationPrincipal CustomerUserDetail userDetail){
         expenseService.deleteExpense(expenseId,userDetail.getId());
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Expense Delete Successfully");
+        return ResponseEntity.ok("Expense Delete Successfully");
     }
     //edit
-    @PutMapping("/edit")
+    @PatchMapping ("/edit")
     public ResponseEntity<String> editExpense(
             @RequestParam UUID expenseId,
             @RequestBody Map<String,Object> updates,
             @AuthenticationPrincipal CustomerUserDetail userDetail){
         expenseService.editExpense(expenseId,updates,userDetail.getId());
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Expense Edited");
+        return ResponseEntity.ok("Expense Edited");
     }
-    //import
+    //list
+    @GetMapping("/list")
+    public ResponseEntity<List<ExpenseDetails>> listExpenses(
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to,
+            @AuthenticationPrincipal CustomerUserDetail userDetail){
+        List<ExpenseDetails> expenseDetails = expenseService.listExpenses(from,to,userDetail.getId());
+        return ResponseEntity.ok(expenseDetails);
+    }
 }
