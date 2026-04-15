@@ -34,13 +34,6 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> handleGenericException(EntityNotFoundException exception){
-        ErrorResponse errorResponse = ErrorResponse.builder().message(exception.getMessage()).date(LocalDate.now()).build();
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(errorResponse);
-    }
-    @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException exception){
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .message(exception.getMessage())
