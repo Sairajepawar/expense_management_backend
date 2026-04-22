@@ -59,4 +59,13 @@ public class ExpenseController {
         List<ExpenseDetails> expenseDetails = expenseService.listExpenses(from,to,userDetail.getId());
         return ResponseEntity.ok(expenseDetails);
     }
+    //export
+    @GetMapping("/export")
+    public ResponseEntity<String> importExpenses(
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to,
+            @AuthenticationPrincipal CustomerUserDetail userDetail){
+        String url= expenseService.exportExpenses(from,to,userDetail.getId());
+        return ResponseEntity.ok(url);
+    }
 }

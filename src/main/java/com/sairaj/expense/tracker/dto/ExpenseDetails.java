@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class ExpenseDetails {
     @NotNull
@@ -19,4 +21,5 @@ public class ExpenseDetails {
             max = 255
     )
     private String description;
+    private LocalDate expenseDate;
 }

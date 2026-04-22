@@ -1,17 +1,26 @@
 package com.sairaj.expense.tracker.service.impl;
 
+import com.sairaj.expense.tracker.dto.CustomerUserDetail;
 import com.sairaj.expense.tracker.dto.ExpenseDetails;
+import com.sairaj.expense.tracker.dto.ExpenseXml;
+import com.sairaj.expense.tracker.dto.ExpensesXml;
 import com.sairaj.expense.tracker.exceptions.OwnershipViolationException;
 import com.sairaj.expense.tracker.model.Expense;
 import com.sairaj.expense.tracker.repository.ExpenseRepository;
+import com.sairaj.expense.tracker.service.PDFGeneratorService;
+import com.sairaj.expense.tracker.service.S3Service;
 import com.sairaj.expense.tracker.service.interfaces.ExpenseService;
+import com.sairaj.expense.tracker.service.interfaces.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cglib.core.Local;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +33,21 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     private ExpenseRepository expenseRepository;
     private ModelMapper modelMapper;
+    private PDFGeneratorService pdfGeneratorService;
+    private S3Service s3Service;
+    private UserService userService;
 
     public ExpenseServiceImpl(
             ExpenseRepository expenseRepository,
-            ModelMapper modelMappper){
+            ModelMapper modelMappper,
+            PDFGeneratorService pdfGeneratorService,
+            S3Service s3Service,
+            UserService userService){
         this.expenseRepository = expenseRepository;
         this.modelMapper = modelMappper;
+        this.pdfGeneratorService = pdfGeneratorService;
+        this.s3Service = s3Service;
+        this.userService = userService;
     }
 
     @Override
@@ -92,5 +110,47 @@ public class ExpenseServiceImpl implements ExpenseService {
         return expenses.stream()
                 .map(expense -> modelMapper.map(expense,ExpenseDetails.class))
                 .toList();
+    }
+
+    @Override
+    public String exportExpenses(
+            LocalDate from,
+            LocalDate to,
+            UUID userId){
+        String fileName = generateFileName(userId,from,to)+".pdf";
+        log.info("File name {} exists",fileName);
+
+        if(!s3Service.fileExists(fileName)){
+            log.info("File {} doesn't exists, starting report generation process",fileName);
+            List<ExpenseDetails> expenseDetails = listExpenses(from,to,userId);
+            ExpensesXml expensesXml = new ExpensesXml();
+            expensesXml.setExpenses(expenseDetails
+                    .stream()
+                    .map(expense -> modelMapper.map(expense, ExpenseXml.class))
+                    .toList());
+            byte[] expenseReport;
+            try {
+                expenseReport = pdfGeneratorService.generateExpenseReport(expensesXml);
+            } catch (Exception e) {
+                log.error("Failed to generate pdf");
+                throw new RuntimeException(e);
+            }
+            log.info("PDF generated successfully");
+            s3Service.uploadByteArray(expenseReport,fileName,"application/pdf");
+            log.info("PDF Uploaded Successfully");
+        }
+        return s3Service.retriveFile(fileName);
+    }
+    private String generateFileName(UUID userId,LocalDate from,LocalDate to){
+        String name = userService.getName(userId);
+        name.replace(' ','-');
+        name+="-";
+        if(from==null || to==null){
+            name+="Complete";
+        }
+        else{
+            name+=from.toString()+"/"+to.toString();
+        }
+        return name;
     }
 }

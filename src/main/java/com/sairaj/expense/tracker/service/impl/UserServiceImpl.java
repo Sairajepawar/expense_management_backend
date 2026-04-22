@@ -9,6 +9,7 @@ import com.sairaj.expense.tracker.model.User;
 import com.sairaj.expense.tracker.repository.UserRepository;
 import com.sairaj.expense.tracker.service.JwtService;
 import com.sairaj.expense.tracker.service.interfaces.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -66,6 +69,12 @@ public class UserServiceImpl implements UserService {
         else{
             throw new InvalidCrendentialException("Invalid Credentials");
         }
+    }
+
+    @Override
+    public String getName(UUID userId){
+        User user = userRepository.findById(userId).orElseThrow(()-> new EntityNotFoundException("User Not Found"));
+        return user.getName();
     }
 }
 
