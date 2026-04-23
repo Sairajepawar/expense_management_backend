@@ -7,6 +7,7 @@ import com.sairaj.expense.tracker.dto.ExpensesXml;
 import com.sairaj.expense.tracker.exceptions.OwnershipViolationException;
 import com.sairaj.expense.tracker.model.Expense;
 import com.sairaj.expense.tracker.repository.ExpenseRepository;
+import com.sairaj.expense.tracker.service.ExcelGeneratorService;
 import com.sairaj.expense.tracker.service.PDFGeneratorService;
 import com.sairaj.expense.tracker.service.S3Service;
 import com.sairaj.expense.tracker.service.interfaces.ExpenseService;
@@ -36,18 +37,21 @@ public class ExpenseServiceImpl implements ExpenseService {
     private PDFGeneratorService pdfGeneratorService;
     private S3Service s3Service;
     private UserService userService;
+    private ExcelGeneratorService excelGeneratorService;
 
     public ExpenseServiceImpl(
             ExpenseRepository expenseRepository,
             ModelMapper modelMappper,
             PDFGeneratorService pdfGeneratorService,
             S3Service s3Service,
-            UserService userService){
+            UserService userService,
+            ExcelGeneratorService excelGeneratorService){
         this.expenseRepository = expenseRepository;
         this.modelMapper = modelMappper;
         this.pdfGeneratorService = pdfGeneratorService;
         this.s3Service = s3Service;
         this.userService = userService;
+        this.excelGeneratorService = excelGeneratorService;
     }
 
     @Override
@@ -116,30 +120,36 @@ public class ExpenseServiceImpl implements ExpenseService {
     public String exportExpenses(
             LocalDate from,
             LocalDate to,
+            String fileType,
             UUID userId){
-        String fileName = generateFileName(userId,from,to)+".pdf";
-        log.info("File name {} exists",fileName);
-
+        if(!fileType.equals("pdf") && !fileType.equals("xlsx")){
+            throw new IllegalArgumentException("Invalid Filetype");
+        }
+        String fileName = generateFileName(userId,from,to)+"."+fileType;
+        log.info("File name {}",fileName);
         if(!s3Service.fileExists(fileName)){
             log.info("File {} doesn't exists, starting report generation process",fileName);
             List<ExpenseDetails> expenseDetails = listExpenses(from,to,userId);
-            ExpensesXml expensesXml = new ExpensesXml();
-            expensesXml.setExpenses(expenseDetails
-                    .stream()
-                    .map(expense -> modelMapper.map(expense, ExpenseXml.class))
-                    .toList());
-            byte[] expenseReport;
-            try {
-                expenseReport = pdfGeneratorService.generateExpenseReport(expensesXml);
-            } catch (Exception e) {
-                log.error("Failed to generate pdf");
-                throw new RuntimeException(e);
+            byte[] expenseReport=null;
+            String contentType="application/";
+            if(fileType.equals("pdf")){
+                log.info("Starting Creation of PDF file");
+                expenseReport = loadPdfFile(expenseDetails);
+                contentType+="pdf";
+                log.info("Successful creation of PDF file");
             }
-            log.info("PDF generated successfully");
-            s3Service.uploadByteArray(expenseReport,fileName,"application/pdf");
-            log.info("PDF Uploaded Successfully");
+            if(fileType.equals("xlsx")){
+                log.info("Starting Creation of XLSX file");
+                expenseReport = loadXlsxFile(expenseDetails);
+                contentType+="vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                log.info("Successful creation of XLSX file");
+            }
+            log.info("Report generated successfully");
+            s3Service.uploadByteArray(expenseReport,fileName,contentType);
+            log.info("Report Uploaded Successfully");
         }
         return s3Service.retriveFile(fileName);
+
     }
     private String generateFileName(UUID userId,LocalDate from,LocalDate to){
         String name = userService.getName(userId);
@@ -152,5 +162,32 @@ public class ExpenseServiceImpl implements ExpenseService {
             name+=from.toString()+"/"+to.toString();
         }
         return name;
+    }
+
+    private byte[] loadPdfFile(List<ExpenseDetails> expenseDetails){
+        ExpensesXml expensesXml = new ExpensesXml();
+        expensesXml.setExpenses(expenseDetails
+                .stream()
+                .map(expense -> modelMapper.map(expense, ExpenseXml.class))
+                .toList());
+        byte[] expenseReport;
+        try {
+            expenseReport = pdfGeneratorService.generateExpenseReport(expensesXml);
+        } catch (Exception e) {
+            log.error("Failed to generate pdf");
+            throw new RuntimeException(e);
+        }
+        return expenseReport;
+    }
+
+    private byte[] loadXlsxFile(List<ExpenseDetails> expenseDetails){
+        byte[] expenseReport=null;
+        try {
+            expenseReport = excelGeneratorService.generateExcel(expenseDetails);
+        } catch (Exception e) {
+            log.error("Failed to generate xlsx");
+            throw new RuntimeException(e);
+        }
+        return expenseReport;
     }
 }

@@ -61,11 +61,12 @@ public class ExpenseController {
     }
     //export
     @GetMapping("/export")
-    public ResponseEntity<String> importExpenses(
+    public ResponseEntity<String> exportExpenses(
             @RequestParam(required = false) LocalDate from,
             @RequestParam(required = false) LocalDate to,
+            @RequestParam(required = true) String fileType,
             @AuthenticationPrincipal CustomerUserDetail userDetail){
-        String url= expenseService.exportExpenses(from,to,userDetail.getId());
+        String url= expenseService.exportExpenses(from,to,fileType,userDetail.getId());
         return ResponseEntity.ok(url);
     }
 }
