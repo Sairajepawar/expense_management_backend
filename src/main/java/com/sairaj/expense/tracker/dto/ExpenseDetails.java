@@ -1,28 +1,25 @@
-package com.sairaj.expense.tracker.model;
+package com.sairaj.expense.tracker.dto;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
-@Entity
 @Data
-public class Expense {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class ExpenseDetails {
     @NotNull
+    @Min(value=0)
     private double amount;
     @NotBlank
     private String category;
     @NotBlank
+    @Size(
+            min = 5,
+            max = 255
+    )
     private String description;
-    @NotNull
     private LocalDate expenseDate;
-    @NotNull
-    private UUID userid;
 }

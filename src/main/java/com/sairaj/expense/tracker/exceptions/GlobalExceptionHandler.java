@@ -1,6 +1,7 @@
 package com.sairaj.expense.tracker.exceptions;
 
 import com.sairaj.expense.tracker.dto.ErrorResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,6 +31,26 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder().message(invalidCrendentialException.getMessage()).date(LocalDate.now()).build();
         return ResponseEntity
                 .status(invalidCrendentialException.getStatusCode())
+                .body(errorResponse);
+    }
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException exception){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(exception.getMessage())
+                .date(LocalDate.now())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponse);
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException exception){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(exception.getMessage())
+                .date(LocalDate.now())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
     }
     @ExceptionHandler(Exception.class)
