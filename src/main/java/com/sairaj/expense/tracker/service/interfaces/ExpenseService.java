@@ -13,5 +13,5 @@ public interface ExpenseService {
     public void deleteExpense(UUID expenseId, UUID userId);
     public void editExpense(UUID expenseId, Map<String,Object> updates, UUID userId);
     public List<ExpenseDetails> listExpenses(LocalDate from, LocalDate to, UUID userId);
-    public String exportExpenses(LocalDate from,LocalDate to, UUID userId);
+    public String exportExpenses(LocalDate from,LocalDate to, String Filetype, UUID userId);
 }
