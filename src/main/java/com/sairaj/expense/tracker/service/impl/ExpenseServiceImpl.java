@@ -11,7 +11,6 @@ import com.sairaj.expense.tracker.service.ExcelGeneratorService;
 import com.sairaj.expense.tracker.service.PDFGeneratorService;
 import com.sairaj.expense.tracker.service.S3Service;
 import com.sairaj.expense.tracker.service.interfaces.ExpenseService;
-import com.sairaj.expense.tracker.service.interfaces.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -36,7 +35,6 @@ public class ExpenseServiceImpl implements ExpenseService {
     private ModelMapper modelMapper;
     private PDFGeneratorService pdfGeneratorService;
     private S3Service s3Service;
-    private UserService userService;
     private ExcelGeneratorService excelGeneratorService;
 
     public ExpenseServiceImpl(
@@ -44,13 +42,11 @@ public class ExpenseServiceImpl implements ExpenseService {
             ModelMapper modelMappper,
             PDFGeneratorService pdfGeneratorService,
             S3Service s3Service,
-            UserService userService,
             ExcelGeneratorService excelGeneratorService){
         this.expenseRepository = expenseRepository;
         this.modelMapper = modelMappper;
         this.pdfGeneratorService = pdfGeneratorService;
         this.s3Service = s3Service;
-        this.userService = userService;
         this.excelGeneratorService = excelGeneratorService;
     }
 
@@ -152,14 +148,13 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     }
     private String generateFileName(UUID userId,LocalDate from,LocalDate to){
-        String name = userService.getName(userId);
-        name.replace(' ','-');
+        String name = userId.toString();
         name+="-";
         if(from==null || to==null){
             name+="Complete";
         }
         else{
-            name+=from.toString()+"/"+to.toString();
+            name+=from.toString()+"-"+to.toString();
         }
         return name;
     }
